@@ -87,6 +87,7 @@ public:
     {
         static_assert(sizeof...(args) == N, "Incorrect number of arguments for Vector construction.");
         T temp_data[] = {static_cast<T>(std::forward<Args>(args))...};
+        MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
             this->data[i] = temp_data[i];
         }
@@ -100,6 +101,7 @@ public:
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
     constexpr explicit Vector(const Vector<T, M> &other) : detail::VectorBase<T, N>()
     {
+        MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < M; ++i) {
             this->data[i] = other.data[i];
         }
@@ -112,10 +114,36 @@ public:
 
     constexpr explicit Vector(const T &value) : detail::VectorBase<T, N>()
     {
+        MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
             this->data[i] = value;
         }
     }
+
+    constexpr explicit Vector(const std::array<T, N> &data)
+    {
+        this->data = data;
+    }
+
+    constexpr explicit Vector(std::array<T, N> &&data)
+    {
+        this->data = std::move(data);
+    }
+
+    constexpr explicit Vector(const T (&data)[N])
+    {
+        for (size_t i = 0; i < N; ++i) {
+            this->data[i] = data[i];
+        }
+    }
+
+    constexpr explicit Vector(T (&&data)[N])
+    {
+        for (size_t i = 0; i < N; ++i) {
+            this->data[i] = std::move(data[i]);
+        }
+    }
+
 
     // Assignment operators
     /**

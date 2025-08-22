@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cassert>
+#include <array>
 #include "Vector.h"
 
 namespace MathUtils
@@ -17,13 +18,36 @@ class Matrix
 
 private:
     Vector<T, M> data[N];
-
 public:
+
     // Default constructor initializes all elements to zero.
     consteval Matrix()
     {
         for (size_t i = 0; i < N; ++i) {
             data[i] = Vector<T, M>();
+        }
+    }
+
+    using Array = std::array<std::array<T, M>, N>;
+
+    explicit constexpr Matrix(const Array &data)
+    {
+        for (size_t i = 0; i < N; i++) {
+            this->data[i] = Vector<T, M>(data[i]);
+        }
+    }
+
+    explicit constexpr Matrix(const T (&data)[N][M])
+    {
+        for (size_t i = 0; i < N; i++) {
+            this->data[i] = Vector<T, M>(data[i]);
+        }
+    }
+
+    explicit constexpr Matrix(T (&&data)[N][M])
+    {
+        for (size_t i = 0; i < N; i++) {
+            this->data[i] = Vector<T, M>(std::move(data[i]));
         }
     }
 
@@ -65,7 +89,7 @@ public:
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
-            result[i] = this->data[i] + other.data[i];
+            result[i] = (*this)[i] + other[i];
         }
         return result;
     }
@@ -75,7 +99,7 @@ public:
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
-            result[i] = this->data[i] - other.data[i];
+            result[i] = (*this)[i] - other[i];
         }
     }
 
@@ -84,37 +108,33 @@ public:
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
-            result[i] = this->data[i] * other.data[i];
+            result[i] = (*this)[i] * other[i];
         }
     }
 
     // Matrix multiplication
     template<size_t P>
-    constexpr Matrix<T, N, P> operator$(const Matrix<T, M, P> &other) const
+    constexpr Matrix<T, N, P> matMult(const Matrix<T, M, P> &other) const
     {
-        static_assert(M == P,
-                      "Matrix multiplication requires the number of columns in the first matrix to match the number of rows in the second matrix.");
         Matrix<T, N, P> result;
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < P; ++j) {
                 result(i, j) = T();
                 for (size_t k = 0; k < M; ++k) {
-                    result(i, j) += this->data[i][k] * other.data[k][j];
+                    result(i, j) += (*this)[i][k] * other[k][j];
                 }
             }
         }
         return result;
     }
 
-    constexpr Matrix<T, N, 1> operator$(const MathUtils::Vector<T, M> &other) const
+    constexpr Matrix<T, N, 1> matMult(const MathUtils::Vector<T, M> &other) const
     {
-        static_assert(M == other.size(),
-                      "Matrix multiplication requires the number of columns in the matrix to match the size of the vector.");
         Matrix<T, N, 1> result;
         for (size_t i = 0; i < N; ++i) {
             result(i, 0) = T();
             for (size_t j = 0; j < M; ++j) {
-                result(i, 0) += this->data[i][j] * other[j];
+                result(i, 0) += (*this)[i][j] * other[j];
             }
         }
         return result;
@@ -126,7 +146,7 @@ public:
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                result(i, j) = this->data[i][j] + scalar;
+                result(i, j) = (*this)[i][j] + scalar;
             }
         }
         return result;
@@ -138,7 +158,7 @@ public:
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                result(i, j) = this->data[i][j] - scalar;
+                result(i, j) = (*this)[i][j] - scalar;
             }
         }
         return result;
@@ -150,7 +170,7 @@ public:
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                result(i, j) = this->data[i][j] * scalar;
+                result(i, j) = (*this)[i][j] * scalar;
             }
         }
         return result;
@@ -163,7 +183,7 @@ public:
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                result(i, j) = this->data[i][j] / scalar;
+                result(i, j) = (*this)[i][j] / scalar;
             }
         }
         return result;
@@ -174,7 +194,7 @@ public:
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                this->data[i][j] += scalar;
+                (*this)[i][j] += scalar;
             }
         }
         return *this;
@@ -185,7 +205,7 @@ public:
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                this->data[i][j] -= scalar;
+                (*this)[i][j] -= scalar;
             }
         }
         return *this;
@@ -196,7 +216,7 @@ public:
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                this->data[i][j] *= scalar;
+                (*this)[i][j] *= scalar;
             }
         }
         return *this;
@@ -208,7 +228,7 @@ public:
         assert(scalar != T() && "Division by zero in Matrix.");
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                this->data[i][j] /= scalar;
+                (*this)[i][j] /= scalar;
             }
         }
         return *this;
@@ -219,7 +239,7 @@ public:
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
-                if (this->data[i][j] != other.data[i][j]) {
+                if ((*this)[i][j] != other[i][j]) {
                     return false;
                 }
             }
