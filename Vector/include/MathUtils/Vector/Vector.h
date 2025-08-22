@@ -350,12 +350,18 @@ public:
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
+            assert(other[i] != T() && "Division by zero.");
             this->data[i] /= other[i];
         }
         return *this;
     }
 
     // Scalar Vector Math operators
+    /**
+     * Scalar addition operator. Adds a scalar value to each element of the vector.
+     * @param scalar The scalar value to add.
+     * @return A new vector that is the sum of this vector and the scalar.
+     */
     Vector<T, N> operator+(const T &scalar) const
     {
         Vector<T, N> result = *this;
@@ -366,6 +372,11 @@ public:
         return result;
     }
 
+    /**
+     * Scalar subtraction operator. Subtracts a scalar value from each element of the vector.
+     * @param scalar The scalar value to subtract.
+     * @return A new vector that is the difference between this vector and the scalar.
+     */
     Vector<T, N> operator-(const T &scalar) const
     {
         Vector<T, N> result = *this;
@@ -376,6 +387,11 @@ public:
         return result;
     }
 
+    /**
+     * Scalar multiplication operator. Multiplies each element of the vector by a scalar value.
+     * @param scalar The scalar value to multiply with.
+     * @return A new vector that is the product of this vector and the scalar.
+     */
     Vector<T, N> operator*(const T &scalar) const
     {
         Vector<T, N> result = *this;
@@ -386,6 +402,11 @@ public:
         return result;
     }
 
+    /**
+     * Scalar division operator. Divides each element of the vector by a scalar value. Throws an assertion if the scalar is zero.
+     * @param scalar The scalar value to divide by.
+     * @return A new vector that is the result of dividing this vector by the scalar.
+     */
     Vector<T, N> operator/(const T &scalar) const
     {
         assert(scalar != T() && "Division by zero.");
@@ -398,6 +419,11 @@ public:
     }
 
     // Scalar Vector Math Assignment operators
+    /**
+     * Scalar addition assignment operator. Adds a scalar value to each element of the vector.
+     * @param scalar The scalar value to add.
+     * @return A reference to this vector after the addition.
+     */
     Vector<T, N> &operator+=(const T &scalar)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -407,6 +433,11 @@ public:
         return *this;
     }
 
+    /**
+     * Scalar subtraction assignment operator. Subtracts a scalar value from each element of the vector.
+     * @param scalar The scalar value to subtract.
+     * @return A reference to this vector after the subtraction.
+     */
     Vector<T, N> &operator-=(const T &scalar)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -416,6 +447,11 @@ public:
         return *this;
     }
 
+    /**
+     * Scalar multiplication assignment operator. Multiplies each element of the vector by a scalar value.
+     * @param scalar The scalar value to multiply.
+     * @return A reference to this vector after the multiplication.
+     */
     Vector<T, N> &operator*=(const T &scalar)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -425,6 +461,11 @@ public:
         return *this;
     }
 
+    /**
+     * Scalar division assignment operator. Divides each element of the vector by a scalar value.
+     * @param scalar The scalar value to divide by.
+     * @return A reference to this vector after the division.
+     */
     Vector<T, N> &operator/=(const T &scalar)
     {
         assert(scalar != T() && "Division by zero.");
