@@ -478,8 +478,7 @@ public:
 
     // Vector functions
     // Dot product function. This should return a scalar value.
-    template<size_t M, typename = std::enable_if_t<(N == M)>>
-    T dot(const Vector<T, M> &other) const
+    T dot(const Vector<T, N> &other) const
     {
         T result = T(); // Initialize with a zero value
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
