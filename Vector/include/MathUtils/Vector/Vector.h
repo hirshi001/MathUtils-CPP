@@ -44,8 +44,6 @@ template<typename T>
 class VectorBase<T, 1>
 {
 public:
-    // We use an anonymous union here. Its members (data and x)
-    // become direct members of the containing class (VectorBase and Vector).
     union
     {
         std::array<T, 1> data;
@@ -64,7 +62,7 @@ public:
         struct
         {
             T x, y;
-        }; // Anonymous struct inside the anonymous union.
+        };
     };
 };
 }
@@ -87,7 +85,6 @@ public:
     explicit Vector(Args &&... args) : detail::VectorBase<T, N>()
     {
         static_assert(sizeof...(args) == N, "Incorrect number of arguments for Vector construction.");
-        // Use an initializer list to populate the data array.
         T temp_data[] = {static_cast<T>(std::forward<Args>(args))...};
         for (size_t i = 0; i < N; ++i) {
             this->data[i] = temp_data[i];
