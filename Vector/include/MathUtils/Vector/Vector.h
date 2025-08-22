@@ -31,7 +31,7 @@ class VectorBase
 public:
     union
     {
-        std::array <T, N> data;
+        std::array<T, N> data;
         struct
         {
             T x, y, z;
@@ -73,7 +73,7 @@ class Vector : public detail::VectorBase<T, N>
 {
 
     static_assert(std::is_arithmetic<T>::value,
-    "Vector's template parameter T must be a numerical type.");
+                  "Vector's template parameter T must be a numerical type.");
 
 public:
 
@@ -107,9 +107,9 @@ public:
     Vector(Vector &&other)
 
     noexcept: detail::VectorBase<T, N>()
-            {
-                    this->data = std::move(other.data);
-            }
+    {
+        this->data = std::move(other.data);
+    }
 
     explicit Vector(const T &value) : detail::VectorBase<T, N>()
     {
@@ -199,17 +199,16 @@ public:
      * @return A new vector that is the sum of this vector and the other vector.
      */
     template<size_t M>
-    Vector<T, N> operator+(const Vector<T, M> &other) const
+    auto operator+(const Vector<T, M> &other) const
     {
-        if constexpr(N >= M)
-        {
+        if constexpr (N >= M) {
             Vector<T, N> result = *this;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < M; ++i) {
                 result.data[i] += other.data[i];
             }
             return result;
-        }else {
+        } else {
             Vector<T, M> result = other;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < N; ++i) {
@@ -225,19 +224,17 @@ public:
      * @param other The vector to subtract from this.
      * @return A new vector that is the difference between this vector and the other vector.
      */
-    template<size_t M, typename = std::enable_if_t<(N >= M)>>
-    Vector<T, N> operator-(const Vector<T, M> &other) const
+    template<size_t M>
+    auto operator-(const Vector<T, M> &other) const
     {
-        if constexpr(N >= M)
-        {
+        if constexpr (N >= M) {
             Vector<T, N> result = *this;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < M; ++i) {
                 result.data[i] -= other.data[i];
             }
             return result;
-        }
-        else {
+        } else {
             Vector<T, M> result = -other;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < N; ++i) {
@@ -254,18 +251,16 @@ public:
      * @return A new vector that is the element-wise product of this vector and the other vector.
      */
     template<size_t M>
-    Vector<T, N> operator*(const Vector<T, M> &other) const
+    auto operator*(const Vector<T, M> &other) const
     {
-        if constexpr(N >= M)
-        {
+        if constexpr (N >= M) {
             Vector<T, N> result;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < M; ++i) {
                 result.data[i] = this->data[i] * other.data[i];
             }
             return result;
-        }
-        else {
+        } else {
             Vector<T, M> result;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < N; ++i) {
@@ -499,7 +494,7 @@ public:
      */
     Vector<T, 3> cross(const Vector<T, 3> &other) const
     {
-        static_assert(N == 3, "Cross product is only defined for 3D or 7D vectors.");
+        static_assert(N == 3, "Cross product is only defined for 3D vectors.");
         return Vector<T, 3>(
                 this->y * other.z - this->z * other.y,
                 this->z * other.x - this->x * other.z,
@@ -551,16 +546,14 @@ public:
                 return false;
             }
         }
-        if constexpr(N > M)
-        {
+        if constexpr (N > M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] != T()) { // Assuming T() is the default value for T
                     return false;
                 }
             }
-        } else if constexpr(M > N)
-        {
+        } else if constexpr (M > N) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] != T()) { // Assuming T() is the default value for T
@@ -588,16 +581,14 @@ public:
                 return true;
             }
         }
-        if constexpr(N > M)
-        {
+        if constexpr (N > M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] != T()) { // Assuming T() is the default value for T
                     return true;
                 }
             }
-        } else if constexpr(M > N)
-        {
+        } else if constexpr (M > N) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] != T()) { // Assuming T() is the default value for T
@@ -629,8 +620,7 @@ public:
                 return false;
             }
         }
-        if constexpr(N < M)
-        {
+        if constexpr (N < M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -639,8 +629,7 @@ public:
                     return false;
                 }
             }
-        } else if constexpr(N > M)
-        {
+        } else if constexpr (N > M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
@@ -674,8 +663,7 @@ public:
                 return false;
             }
         }
-        if constexpr(N < M)
-        {
+        if constexpr (N < M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -684,8 +672,7 @@ public:
                     return false;
                 }
             }
-        } else if constexpr(N > M)
-        {
+        } else if constexpr (N > M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
@@ -719,8 +706,7 @@ public:
             }
         }
 
-        if constexpr(N < M)
-        {
+        if constexpr (N < M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -729,8 +715,7 @@ public:
                     return true;
                 }
             }
-        } else if constexpr(M < N)
-        {
+        } else if constexpr (M < N) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
@@ -764,8 +749,7 @@ public:
             }
         }
 
-        if constexpr(N < M)
-        {
+        if constexpr (N < M) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -774,8 +758,7 @@ public:
                     return true;
                 }
             }
-        } else if constexpr(M < N)
-        {
+        } else if constexpr (M < N) {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
