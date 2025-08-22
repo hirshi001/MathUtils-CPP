@@ -74,6 +74,7 @@ class Vector : public detail::VectorBase<T, N>
 
     static_assert(std::is_arithmetic<T>::value,
                   "Vector's template parameter T must be a numerical type.");
+    static_assert(N > 0, "Vector's size N must be greater than 0.");
 
 public:
 
@@ -174,6 +175,7 @@ public:
      */
     Vector<T, N> operator-() const
     {
+        static_assert(std::is_signed<T>::value, "Vector's element type must be a signed type.");
         Vector<T, N> result;
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
