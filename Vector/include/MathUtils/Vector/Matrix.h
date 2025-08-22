@@ -40,13 +40,13 @@ public:
         return data[row][col];
     }
 
-    constexpr const Vector<T, M>& operator[](size_t row) const
+    constexpr const Vector<T, M> &operator[](size_t row) const
     {
         assert(row < N && "Matrix row index out of bounds.");
         return data[row];
     }
 
-    constexpr Vector<T, M>& operator[](size_t row)
+    constexpr Vector<T, M> &operator[](size_t row)
     {
         assert(row < N && "Matrix row index out of bounds.");
         return data[row];
@@ -227,4 +227,98 @@ public:
         return true;
     }
 };
+
+#define USING_MATRIX(R, C, SUFFIX, TYPE) \
+using Mat##R##x##C##SUFFIX = Matrix<TYPE, R, C>; \
+USING_VECTOR(C, SUFFIX, TYPE)
+
+#define MATRIX_ROW_1(C, SUFFIX, TYPE) \
+    USING_MATRIX(1, C, SUFFIX, TYPE)
+
+#define MATRIX_ROW_2(C, SUFFIX, TYPE) \
+    MATRIX_ROW_1(C, SUFFIX, TYPE)     \
+    USING_MATRIX(2, C, SUFFIX, TYPE)
+
+#define MATRIX_ROW_3(C, SUFFIX, TYPE) \
+    MATRIX_ROW_2(C, SUFFIX, TYPE)     \
+    USING_MATRIX(3, C, SUFFIX, TYPE)
+
+#define MATRIX_ROW_4(C, SUFFIX, TYPE) \
+    MATRIX_ROW_3(C, SUFFIX, TYPE)     \
+    USING_MATRIX(4, C, SUFFIX, TYPE)
+
+#define MATRIX_ALL_1(SUFFIX, TYPE) \
+    MATRIX_ROW_1(1, SUFFIX, TYPE)
+
+#define MATRIX_ALL_2(SUFFIX, TYPE) \
+    MATRIX_ALL_1(SUFFIX, TYPE)     \
+    MATRIX_ROW_2(2, SUFFIX, TYPE)
+
+#define MATRIX_ALL_3(SUFFIX, TYPE) \
+    MATRIX_ALL_2(SUFFIX, TYPE)     \
+    MATRIX_ROW_3(3, SUFFIX, TYPE)
+
+#define MATRIX_ALL_4(SUFFIX, TYPE) \
+    MATRIX_ALL_3(SUFFIX, TYPE)     \
+    MATRIX_ROW_4(4, SUFFIX, TYPE)
+
+#ifdef USING_ALL_MATRIX_TYPES
+    #define USING_INT8_MATRIX_TYPES
+    #define USING_UINT8_MATRIX_TYPES
+
+    #define USING_INT16_MATRIX_TYPES
+    #define USING_UINT16_MATRIX_TYPES
+
+    #define USING_INT32_MATRIX_TYPES
+    #define USING_UINT32_MATRIX_TYPES
+
+    #define USING_INT64_MATRIX_TYPES
+    #define USING_UINT64_MATRIX_TYPES
+
+    #define USING_FLOATING_MATRIX_TYPES
+    #define USING_DOUBLE_MATRIX_TYPES
+#endif
+
+#define MATRIX_ALL(SUFFIX, TYPE) MATRIX_ALL_4(SUFFIX, TYPE)
+
+#ifdef USING_INT8_MATRIX_TYPES
+MATRIX_ALL(I8, int8_t)
+#endif
+
+#ifdef USING_UINT8_MATRIX_TYPES
+MATRIX_ALL(UI8, uint8_t)
+#endif
+
+#ifdef USING_INT16_MATRIX_TYPES
+MATRIX_ALL(I16, int16_t)
+#endif
+
+#ifdef USING_UINT16_MATRIX_TYPES
+MATRIX_ALL(UI16, uint16_t)
+#endif
+
+#ifdef USING_INT32_MATRIX_TYPES
+MATRIX_ALL(I32, int32_t)
+#endif
+
+#ifdef USING_UINT32_MATRIX_TYPES
+MATRIX_ALL(UI32, uint32_t)
+#endif
+
+#ifdef USING_INT64_MATRIX_TYPES
+MATRIX_ALL(I64, int64_t)
+#endif
+
+#ifdef USING_UINT64_MATRIX_TYPES
+MATRIX_ALL(UI64, uint64_t)
+#endif
+
+#ifdef USING_FLOATING_MATRIX_TYPES
+MATRIX_ALL(F, float)
+#endif
+
+#ifdef USING_DOUBLE_MATRIX_TYPES
+MATRIX_ALL(D, double)
+#endif
+
 }

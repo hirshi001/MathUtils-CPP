@@ -366,7 +366,7 @@ constexpr Interval<AsUnit, T> interval(T value)
 }
 
 template<TimeUnit AsUnit = DefaultTimeUnit, typename T = DefaultTimePrecision>
-consteval Time<AsUnit, T> now()
+Time<AsUnit, T> now()
 {
     static_assert(std::is_arithmetic<T>::value, "Time template parameter T must be a numerical type.");
 
