@@ -31,7 +31,7 @@ class VectorBase
 public:
     union
     {
-        std::array<T, N> data;
+        std::array <T, N> data;
         struct
         {
             T x, y, z;
@@ -73,7 +73,7 @@ class Vector : public detail::VectorBase<T, N>
 {
 
     static_assert(std::is_arithmetic<T>::value,
-                  "Vector's template parameter T must be a numerical type.");
+    "Vector's template parameter T must be a numerical type.");
 
 public:
 
@@ -104,10 +104,12 @@ public:
         }
     }
 
-    Vector(Vector &&other) noexcept: detail::VectorBase<T, N>()
-    {
-        this->data = std::move(other.data);
-    }
+    Vector(Vector &&other)
+
+    noexcept: detail::VectorBase<T, N>()
+            {
+                    this->data = std::move(other.data);
+            }
 
     explicit Vector(const T &value) : detail::VectorBase<T, N>()
     {
@@ -135,7 +137,9 @@ public:
      * @param other The vector to move from.
      * @return A reference to this vector.
      */
-    Vector &operator=(Vector &&other) noexcept
+    Vector &operator=(Vector &&other)
+
+    noexcept
     {
         if (this != &other) {
             this->data = std::move(other.data);
@@ -197,7 +201,8 @@ public:
     template<size_t M>
     Vector<T, N> operator+(const Vector<T, M> &other) const
     {
-        if constexpr (N >= M) {
+        if constexpr(N >= M)
+        {
             Vector<T, N> result = *this;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < M; ++i) {
@@ -223,7 +228,8 @@ public:
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
     Vector<T, N> operator-(const Vector<T, M> &other) const
     {
-        if constexpr(N >= M) {
+        if constexpr(N >= M)
+        {
             Vector<T, N> result = *this;
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = 0; i < M; ++i) {
@@ -241,28 +247,40 @@ public:
         }
     }
 
-    template<size_t M, typename = std::enable_if_t<(N >= M)>>
+    /**
+     * Vector multiplication operator. If the sizes of the vectors are different, the smaller one is implicitly padded with 0's before the multiplication.
+     * @tparam M The size of the other vector.
+     * @param other The vector to multiply with this.
+     * @return A new vector that is the element-wise product of this vector and the other vector.
+     */
+    template<size_t M>
     Vector<T, N> operator*(const Vector<T, M> &other) const
     {
-        Vector<T, N> result;
-        MATHUTILS_VECTOR_FOR_LOOP_UNROLL
-        for (size_t i = 0; i < M; ++i) {
-            result.data[i] = this->data[i] * other.data[i];
+        if constexpr(N >= M)
+        {
+            Vector<T, N> result;
+            MATHUTILS_VECTOR_FOR_LOOP_UNROLL
+            for (size_t i = 0; i < M; ++i) {
+                result.data[i] = this->data[i] * other.data[i];
+            }
+            return result;
         }
-        return result;
+        else {
+            Vector<T, M> result;
+            MATHUTILS_VECTOR_FOR_LOOP_UNROLL
+            for (size_t i = 0; i < N; ++i) {
+                result.data[i] = this->data[i] * other.data[i];
+            }
+            return result;
+        }
     }
 
-    template<size_t M, typename = std::enable_if_t<(N < M)>>
-    Vector<T, M> operator*(const Vector<T, M> &other) const
-    {
-        Vector<T, M> result;
-        MATHUTILS_VECTOR_FOR_LOOP_UNROLL
-        for (size_t i = 0; i < N; ++i) {
-            result.data[i] = this->data[i] * other.data[i];
-        }
-        return result;
-    }
-
+    /**
+     * Vector division operator. If the numerator is smaller than the denominator, the numerator is implicitly padded with 0's before the division. Does not support the case where the denominator is smaller than the numerator.
+     * @tparam M The size of the other vector.
+     * @param other The vector to divide this by.
+     * @return A new vector that is the element-wise division of this vector by the other vector.
+     */
     template<size_t M, typename = std::enable_if_t<(N <= M)>>
     Vector<T, M> operator/(const Vector<T, M> &other) const
     {
@@ -275,6 +293,12 @@ public:
     }
 
     // Vector Vector Math Assignment operators
+    /**
+     * Vector addition assignment operator. If the other vector is smaller than this vector, the other vector is implicitly padded with 0's before the addition.
+     * @tparam M The size of the other vector.
+     * @param other The vector to add to this.
+     * @return A reference to this vector after the addition.
+     */
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
     Vector<T, N> &operator+=(const Vector<T, M> &other)
     {
@@ -285,6 +309,12 @@ public:
         return *this;
     }
 
+    /**
+     * Vector subtraction assignment operator. If the other vector is smaller than this vector, the other vector is implicitly padded with 0's before the subtraction.
+     * @tparam M The size of the other vector.
+     * @param other The vector to subtract from this.
+     * @return A reference to this vector after the subtraction.
+     */
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
     Vector<T, N> &operator-=(const Vector<T, M> &other)
     {
@@ -295,6 +325,12 @@ public:
         return *this;
     }
 
+    /**
+     * Vector multiplication assignment operator. If the other vector is smaller than this vector, the other vector is implicitly padded with 0's before the multiplication.
+     * @tparam M The size of the other vector.
+     * @param other The vector to multiply with this.
+     * @return A reference to this vector after the multiplication.
+     */
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
     Vector<T, N> &operator*=(const Vector<T, M> &other)
     {
@@ -305,6 +341,11 @@ public:
         return *this;
     }
 
+    /**
+     * Vector division assignment operator. Only supports the case where both vectors are of the same size.
+     * @param other The vector to divide this by.
+     * @return A reference to this vector after the division.
+     */
     Vector<T, N> &operator/=(const Vector<T, N> &other)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -438,21 +479,24 @@ public:
     template<size_t M>
     bool operator==(const Vector<T, M> &other) const
     {
-        constexpr size_t smallest_size = std::min(N, M);
+        constexpr
+        size_t smallest_size = std::min(N, M);
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < smallest_size; ++i) {
             if (this->data[i] != other.data[i]) {
                 return false;
             }
         }
-        if constexpr (N > M) {
+        if constexpr(N > M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] != T()) { // Assuming T() is the default value for T
                     return false;
                 }
             }
-        } else if constexpr (M > N) {
+        } else if constexpr(M > N)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] != T()) { // Assuming T() is the default value for T
@@ -467,21 +511,24 @@ public:
     template<size_t M>
     bool operator!=(const Vector<T, M> &other) const
     {
-        constexpr size_t smallest_size = std::min(N, M);
+        constexpr
+        size_t smallest_size = std::min(N, M);
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < smallest_size; ++i) {
             if (this->data[i] != other.data[i]) {
                 return true;
             }
         }
-        if constexpr (N > M) {
+        if constexpr(N > M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] != T()) { // Assuming T() is the default value for T
                     return true;
                 }
             }
-        } else if constexpr (M > N) {
+        } else if constexpr(M > N)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] != T()) { // Assuming T() is the default value for T
@@ -497,7 +544,8 @@ public:
     bool operator<(const Vector<T, M> &other) const
     {
 
-        constexpr size_t min_dim = (N < M) ? N : M;
+        constexpr
+        size_t min_dim = (N < M) ? N : M;
 
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < min_dim; ++i) {
@@ -507,7 +555,8 @@ public:
                 return false;
             }
         }
-        if constexpr (N < M) {
+        if constexpr(N < M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -516,7 +565,8 @@ public:
                     return false;
                 }
             }
-        } else if constexpr (N > M) {
+        } else if constexpr(N > M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
@@ -534,7 +584,8 @@ public:
     bool operator<=(const Vector<T, M> &other) const
     {
 
-        constexpr size_t min_dim = (N < M) ? N : M;
+        constexpr
+        size_t min_dim = (N < M) ? N : M;
 
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < min_dim; ++i) {
@@ -544,7 +595,8 @@ public:
                 return false;
             }
         }
-        if constexpr (N < M) {
+        if constexpr(N < M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -553,7 +605,8 @@ public:
                     return false;
                 }
             }
-        } else if constexpr (N > M) {
+        } else if constexpr(N > M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
@@ -570,7 +623,8 @@ public:
     template<size_t M>
     bool operator>(const Vector<T, M> &other) const
     {
-        constexpr size_t min_dim = (N < M) ? N : M;
+        constexpr
+        size_t min_dim = (N < M) ? N : M;
 
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < min_dim; ++i) {
@@ -581,7 +635,8 @@ public:
             }
         }
 
-        if constexpr (N < M) {
+        if constexpr(N < M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -590,7 +645,8 @@ public:
                     return true;
                 }
             }
-        } else if constexpr (M < N) {
+        } else if constexpr(M < N)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
@@ -607,7 +663,8 @@ public:
     template<size_t M>
     bool operator>=(const Vector<T, M> &other) const
     {
-        constexpr size_t min_dim = (N < M) ? N : M;
+        constexpr
+        size_t min_dim = (N < M) ? N : M;
 
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < min_dim; ++i) {
@@ -618,7 +675,8 @@ public:
             }
         }
 
-        if constexpr (N < M) {
+        if constexpr(N < M)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = N; i < M; ++i) {
                 if (other.data[i] > T()) { // Assuming T() is the default value for T
@@ -627,7 +685,8 @@ public:
                     return true;
                 }
             }
-        } else if constexpr (M < N) {
+        } else if constexpr(M < N)
+        {
             MATHUTILS_VECTOR_FOR_LOOP_UNROLL
             for (size_t i = M; i < N; ++i) {
                 if (this->data[i] > T()) { // Assuming T() is the default value for T
