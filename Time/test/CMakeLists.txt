@@ -4,3 +4,5 @@ add_test_executable(test_time
         SOURCES
         time_tests.cpp
 )
+
+target_link_libraries(test_time PRIVATE Time)

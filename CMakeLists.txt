@@ -17,6 +17,7 @@ install(EXPORT "${export_set}"
 
 include(FetchContent)
 include(CMakeUtil/TestingFramework.cmake)
+include(CmakeUtil/Component.cmake)
 
 # Add Subdirectories here
 add_subdirectory(Vector)

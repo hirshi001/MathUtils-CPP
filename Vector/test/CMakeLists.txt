@@ -5,3 +5,5 @@ add_test_executable(test_vector
         matrix_tests.cpp
         vector_tests.cpp
 )
+
+target_link_libraries(test_vector PRIVATE Vector)
