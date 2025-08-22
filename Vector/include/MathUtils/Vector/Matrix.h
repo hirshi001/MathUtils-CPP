@@ -77,11 +77,11 @@ public:
     }
 
     // Get number of rows
-    [[nodiscard]] constexpr size_t rows() const
+    [[nodiscard]] consteval size_t rows() const
     { return N; }
 
     // Get number of columns
-    [[nodiscard]] constexpr size_t cols() const
+    [[nodiscard]] consteval size_t cols() const
     { return M; }
 
     // Matrix addition

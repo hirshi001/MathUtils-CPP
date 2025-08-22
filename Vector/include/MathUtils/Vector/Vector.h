@@ -144,6 +144,10 @@ public:
         }
     }
 
+    consteval size_t size() {
+        return N;
+    }
+
 
     // Assignment operators
     /**
