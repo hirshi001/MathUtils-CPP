@@ -35,26 +35,19 @@ consteval auto map_unit()
 {
     if constexpr (Unit == TimeUnit::Second) {
         return std::chrono::seconds();
-    }
-    else if constexpr (Unit == TimeUnit::Millisecond) {
+    } else if constexpr (Unit == TimeUnit::Millisecond) {
         return std::chrono::milliseconds();
-    }
-    else if constexpr (Unit == TimeUnit::Microsecond) {
+    } else if constexpr (Unit == TimeUnit::Microsecond) {
         return std::chrono::microseconds();
-    }
-    else if constexpr (Unit == TimeUnit::Nanosecond) {
+    } else if constexpr (Unit == TimeUnit::Nanosecond) {
         return std::chrono::nanoseconds();
-    }
-    else if constexpr (Unit == TimeUnit::Picosecond) {
+    } else if constexpr (Unit == TimeUnit::Picosecond) {
         return std::chrono::duration<uint64_t, std::pico>();
-    }
-    else if constexpr (Unit == TimeUnit::Femtosecond) {
+    } else if constexpr (Unit == TimeUnit::Femtosecond) {
         return std::chrono::duration<uint64_t, std::femto>();
-    }
-    else if constexpr (Unit == TimeUnit::Attosecond) {
+    } else if constexpr (Unit == TimeUnit::Attosecond) {
         return std::chrono::duration<uint64_t, std::atto>();
-    }
-    else {
+    } else {
         static_assert(Unit >= TimeUnit::Second, "Invalid TimeUnit specified.");
     }
 }
@@ -67,8 +60,7 @@ consteval uint64_t conversionFactor()
 
     if constexpr (toUnit == fromUnit) {
         return 1;
-    }
-    else {
+    } else {
         return 1000ULL * conversionFactor<static_cast<TimeUnit>(fromUnit - 1), toUnit>();
     }
 }
@@ -105,14 +97,14 @@ private:
     T duration;
 
 public:
-    Interval() : duration(0)
+    constexpr Interval() : duration(0)
     {}
 
-    explicit Interval(T value) : duration(value)
+    constexpr explicit Interval(T value) : duration(value)
     {}
 
     template<typename Rep, typename Period>
-    explicit Interval(const std::chrono::duration<Rep, Period>& d)
+    constexpr explicit Interval(const std::chrono::duration<Rep, Period> &d)
     {
         // Convert the incoming duration to our specific unit.
         auto converted_duration = std::chrono::duration_cast<decltype(detail::map_unit<Unit>())>(d);
@@ -121,20 +113,18 @@ public:
         duration = static_cast<T>(converted_duration.count());
     }
 
-    [[nodiscard]] constexpr
-
-    T getDuration() const
+    [[nodiscard]] constexpr T getDuration() const
     {
         return duration;
     }
 
-    [[nodiscard]] TimeUnit getUnit() const
+    [[nodiscard]] constexpr TimeUnit getUnit() const
     {
         return Unit;
     }
 
     // convert to std::chrono::duration
-    [[nodiscard]] explicit operator std::chrono::duration<T, decltype(detail::map_unit<Unit>())>() const
+    [[nodiscard]] constexpr explicit operator std::chrono::duration<T, decltype(detail::map_unit<Unit>())>() const
     {
         // Assert that the value type T is compatible with the underlying duration type.
         static_assert(std::is_convertible_v<T, typename decltype(detail::map_unit<Unit>())::rep>,
@@ -151,86 +141,86 @@ public:
         return Interval<toUnit, T>(detail::convert<Unit, toUnit, T>(duration));
     }
 
-    Interval &operator=(const Interval<Unit, T> &other) = default;
+    constexpr Interval &operator=(const Interval<Unit, T> &other) = default;
 
-    Interval &operator=(Interval<Unit, T> &&other) noexcept = default;
+    constexpr Interval &operator=(Interval<Unit, T> &&other) noexcept = default;
 
     template<TimeUnit OtherUnit>
-    bool operator==(const Interval<OtherUnit, T> &other) const
+    constexpr bool operator==(const Interval<OtherUnit, T> &other) const
     {
         return duration == detail::convert<Unit, OtherUnit, T>(other.duration);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator!=(const Interval<OtherUnit, T> &other) const
+    constexpr bool operator!=(const Interval<OtherUnit, T> &other) const
     {
         return duration != detail::convert<Unit, OtherUnit, T>(other.duration);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator<(const Interval<OtherUnit, T> &other) const
+    constexpr bool operator<(const Interval<OtherUnit, T> &other) const
     {
         return duration < detail::convert<Unit, OtherUnit, T>(other.duration);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator<=(const Interval<OtherUnit, T> &other) const
+    constexpr bool operator<=(const Interval<OtherUnit, T> &other) const
     {
         return duration <= detail::convert<Unit, OtherUnit, T>(other.duration);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator>(const Interval<OtherUnit, T> &other) const
+    constexpr bool operator>(const Interval<OtherUnit, T> &other) const
     {
         return duration > detail::convert<Unit, OtherUnit, T>(other.duration);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator>=(const Interval<OtherUnit, T> &other) const
+    constexpr bool operator>=(const Interval<OtherUnit, T> &other) const
     {
         return duration >= detail::convert<Unit, OtherUnit, T>(other.duration);
     }
 
-    Interval operator+(const Interval &other) const
+    constexpr Interval operator+(const Interval &other) const
     {
         return Interval(duration + other.duration);
     }
 
-    Interval operator-(const Interval &other) const
+    constexpr Interval operator-(const Interval &other) const
     {
         return Interval(duration - other.duration);
     }
 
-    Interval operator*(T value) const
+    constexpr Interval operator*(T value) const
     {
         return Interval(duration * value);
     }
 
-    Interval operator/(T value) const
+    constexpr Interval operator/(T value) const
     {
         assert(value != 0 && "Division by zero in Interval.");
         return Interval(duration / value);
     }
 
-    Interval &operator+=(const Interval &other)
+    constexpr Interval &operator+=(const Interval &other)
     {
         duration += other.duration;
         return *this;
     }
 
-    Interval &operator-=(const Interval &other)
+    constexpr Interval &operator-=(const Interval &other)
     {
         duration -= other.duration;
         return *this;
     }
 
-    Interval &operator*=(T value)
+    constexpr Interval &operator*=(T value)
     {
         duration *= value;
         return *this;
     }
 
-    Interval &operator/=(T value)
+    constexpr Interval &operator/=(T value)
     {
         assert(value != 0 && "Division by zero in Interval.");
         duration /= value;
@@ -248,13 +238,13 @@ private:
     T timePoint;
 
 public:
-    Time() : timePoint(0)
+    constexpr Time() : timePoint(0)
     {}
 
-    explicit Time(T value) : timePoint(value)
+    constexpr explicit Time(T value) : timePoint(value)
     {}
 
-    explicit Time(std::chrono::time_point<std::chrono::system_clock, decltype(detail::map_unit<Unit>())> tp)
+    constexpr explicit Time(std::chrono::time_point<std::chrono::system_clock, decltype(detail::map_unit<Unit>())> tp)
     {
         // Assert that the value type T is compatible with the underlying duration type.
         static_assert(std::is_convertible_v<T, typename decltype(detail::map_unit<Unit>())::rep>,
@@ -264,9 +254,7 @@ public:
         timePoint = static_cast<T>(tp.time_since_epoch().count());
     }
 
-    [[nodiscard]] constexpr
-
-    T getValue() const
+    [[nodiscard]] constexpr T getValue() const
     {
         return timePoint;
     }
@@ -278,7 +266,7 @@ public:
 
     // convert to std::chrono::time_point
     // A conversion operator that allows implicit conversion from MathTime to std::chrono::time_point.
-    [[nodiscard]] explicit operator std::chrono::time_point<std::chrono::system_clock, decltype(detail::map_unit<Unit>())>() const
+    [[nodiscard]] constexpr explicit operator std::chrono::time_point<std::chrono::system_clock, decltype(detail::map_unit<Unit>())>() const
     {
         // Assert that the value type T is compatible with the underlying duration type.
         static_assert(std::is_convertible_v<T, typename decltype(detail::map_unit<Unit>())::rep>,
@@ -298,88 +286,87 @@ public:
         return Time<toUnit, T>(detail::convert<Unit, toUnit, T>(timePoint));
     }
 
-    Time &operator=(const Time<Unit, T> &other) = default;
+    constexpr Time &operator=(const Time<Unit, T> &other) = default;
 
-    Time &operator=(Time<Unit, T> &&other) noexcept = default;
+    constexpr Time &operator=(Time<Unit, T> &&other) noexcept = default;
 
     template<TimeUnit OtherUnit>
-    bool operator==(const Time<OtherUnit, T> &other) const
+    constexpr bool operator==(const Time<OtherUnit, T> &other) const
     {
         return timePoint == detail::convert<Unit, OtherUnit, T>(other.timePoint);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator!=(const Time<OtherUnit, T> &other) const
+    constexpr bool operator!=(const Time<OtherUnit, T> &other) const
     {
         return timePoint != detail::convert<Unit, OtherUnit, T>(other.timePoint);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator<(const Time<OtherUnit, T> &other) const
+    constexpr bool operator<(const Time<OtherUnit, T> &other) const
     {
         return timePoint < detail::convert<Unit, OtherUnit, T>(other.timePoint);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator<=(const Time<OtherUnit, T> &other) const
+    constexpr bool operator<=(const Time<OtherUnit, T> &other) const
     {
         return timePoint <= detail::convert<Unit, OtherUnit, T>(other.timePoint);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator>(const Time<OtherUnit, T> &other) const
+    constexpr bool operator>(const Time<OtherUnit, T> &other) const
     {
         return timePoint > detail::convert<Unit, OtherUnit, T>(other.timePoint);
     }
 
     template<TimeUnit OtherUnit>
-    bool operator>=(const Time<OtherUnit, T> &other) const
+    constexpr bool operator>=(const Time<OtherUnit, T> &other) const
     {
         return timePoint >= detail::convert<Unit, OtherUnit, T>(other.timePoint);
     }
 
-    Time operator+(const Interval<Unit, T> &other) const
+    constexpr Time operator+(const Interval<Unit, T> &other) const
     {
         return Time(timePoint + other.getDuration());
     }
 
-    Time operator-(const Interval<Unit, T> &other) const
+    constexpr Time operator-(const Interval<Unit, T> &other) const
     {
         return Time(timePoint - other.getDuration());
     }
 
-    Time &operator+=(const Interval<Unit, T> &other)
+    constexpr Time &operator+=(const Interval<Unit, T> &other)
     {
         timePoint += other.getDuration();
         return *this;
     }
 
-    Time &operator-=(const Interval<Unit, T> &other)
+    constexpr Time &operator-=(const Interval<Unit, T> &other)
     {
         timePoint -= other.getDuration();
         return *this;
     }
 
-    Interval<Unit, T> operator-(const Time &other) const
+    constexpr Interval<Unit, T> operator-(const Time &other) const
     {
         return Interval(timePoint - other.timePoint);
     }
 };
 
 
-
 namespace TimeUtils
 {
 
 template<TimeUnit AsUnit = DefaultTimeUnit, TimeUnit FromUnit = DefaultTimeUnit, typename T = DefaultTimePrecision>
-Interval<AsUnit, T> interval(T value)
+constexpr Interval<AsUnit, T> interval(T value)
 {
     static_assert(std::is_arithmetic<T>::value, "Time template parameter T must be a numerical type.");
     return Interval<AsUnit, T>(MathUtils::detail::convert<FromUnit, AsUnit, T>(value));
 }
 
-template< TimeUnit AsUnit = DefaultTimeUnit, typename T = DefaultTimePrecision>
-Time<AsUnit, T> now()
+template<TimeUnit AsUnit = DefaultTimeUnit, typename T = DefaultTimePrecision>
+consteval Time<AsUnit, T> now()
 {
     static_assert(std::is_arithmetic<T>::value, "Time template parameter T must be a numerical type.");
 
