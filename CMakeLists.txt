@@ -5,7 +5,7 @@ project(${project} VERSION ${version} LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 set(export_set "${project}-targets")
 
@@ -16,10 +16,11 @@ install(EXPORT "${export_set}"
 )
 
 include(FetchContent)
-include(Util/TestingFramework.cmake)
+include(CMakeUtil/TestingFramework.cmake)
 
 # Add Subdirectories here
 add_subdirectory(Vector)
+add_subdirectory(Time)
 
 include(CMakePackageConfigHelpers)
 
