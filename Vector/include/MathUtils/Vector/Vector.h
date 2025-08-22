@@ -477,7 +477,11 @@ public:
     }
 
     // Vector functions
-    // Dot product function. This should return a scalar value.
+    /**
+     * Dot product function. Computes the dot product of this vector with another vector.
+     * @param other The other vector to compute the dot product with.
+     * @return The dot product of this vector and the other vector.
+     */
     T dot(const Vector<T, N> &other) const
     {
         T result = T(); // Initialize with a zero value
@@ -488,7 +492,11 @@ public:
         return result;
     }
 
-    // Cross product function. Only defined for 3D vectors.
+    /**
+     * Cross product function. Computes the cross product of this vector with another 3D vector.
+     * @param other The other 3D vector to compute the cross product with.
+     * @return A new vector that is the cross product of this vector and the other vector.
+     */
     Vector<T, 3> cross(const Vector<T, 3> &other) const
     {
         static_assert(N == 3, "Cross product is only defined for 3D or 7D vectors.");
@@ -499,7 +507,12 @@ public:
         );
     }
 
-
+    /**
+     * Swap function. Swaps the elements at the specified indices in the vector.
+     * @param index1 The first index of the vector to swap.
+     * @param index2 The second index of the vector to swap.
+     * @return A reference to this vector after the swap.
+     */
     Vector<T, N> &swap(size_t index1, size_t index2)
     {
         assert(index1 < N && index2 < N && "Index out of bounds.");
@@ -507,6 +520,12 @@ public:
         return *this;
     }
 
+    /**
+     * Swap function. Swaps the elements at the specified indices in the vector and returns a new vector.
+     * @param index1 The first index of the vector to swap.
+     * @param index2 The second index of the vector to swap.
+     * @return A new vector that is a copy of this vector with the specified elements swapped.
+     */
     Vector<T, N> swap(size_t index1, size_t index2) const
     {
         assert(index1 < N && index2 < N && "Index out of bounds.");
@@ -515,7 +534,12 @@ public:
         return result;
     }
 
-    // equality
+    /**
+     * Equality operator. Compares this vector with another vector of the same or different size. The shorter vector is implicitly padded with 0's before the comparison.
+     * @tparam M The size of the other vector.
+     * @param other The vector to compare with this.
+     * @return True if the vectors are equal, false otherwise.
+     */
     template<size_t M>
     bool operator==(const Vector<T, M> &other) const
     {
@@ -547,7 +571,12 @@ public:
         return true;
     }
 
-    // inequality
+    /**
+     * Inequality operator. Compares this vector with another vector of the same or different size. The shorter vector is implicitly padded with 0's before the comparison.
+     * @tparam M The size of the other vector.
+     * @param other The vector to compare with this.
+     * @return True if the vectors are not equal, false otherwise.
+     */
     template<size_t M>
     bool operator!=(const Vector<T, M> &other) const
     {
@@ -579,7 +608,12 @@ public:
         return false;
     }
 
-    // less than
+    /**
+     * Less than operator. Compares this vector with another vector of the same or different size. The shorter vector is implicitly padded with 0's before the comparison.
+     * @tparam M The size of the other vector.
+     * @param other The vector to compare with this.
+     * @return True if this vector is less than the other vector, false otherwise.
+     */
     template<size_t M>
     bool operator<(const Vector<T, M> &other) const
     {
@@ -619,7 +653,12 @@ public:
         return false;
     }
 
-    // less than or equal to
+    /**
+     * Less than or equal to operator. Compares this vector with another vector of the same or different size. The shorter vector is implicitly padded with 0's before the comparison.
+     * @tparam M The size of the other vector.
+     * @param other The vector to compare with this.
+     * @return True if this vector is less than or equal to the other vector, false otherwise.
+     */
     template<size_t M>
     bool operator<=(const Vector<T, M> &other) const
     {
@@ -659,7 +698,12 @@ public:
         return true;
     }
 
-    // greater than
+    /**
+     * Greater than operator. Compares this vector with another vector of the same or different size. The shorter vector is implicitly padded with 0's before the comparison.
+     * @tparam M The size of the other vector.
+     * @param other The vector to compare with this.
+     * @return True if this vector is greater than the other vector, false otherwise.
+     */
     template<size_t M>
     bool operator>(const Vector<T, M> &other) const
     {
@@ -699,7 +743,12 @@ public:
         return false;
     }
 
-    // greater than or equal to
+    /**
+     * Greater than or equal to operator. Compares this vector with another vector of the same or different size. The shorter vector is implicitly padded with 0's before the comparison.
+     * @tparam M The size of the other vector.
+     * @param other The vector to compare with this.
+     * @return True if this vector is greater than or equal to the other vector, false otherwise.
+     */
     template<size_t M>
     bool operator>=(const Vector<T, M> &other) const
     {
