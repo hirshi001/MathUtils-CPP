@@ -79,11 +79,11 @@ class Vector : public detail::VectorBase<T, N>
 public:
 
     // Constructors
-    Vector() : detail::VectorBase<T, N>()
+    consteval Vector() : detail::VectorBase<T, N>()
     {}
 
     template<typename... Args>
-    explicit Vector(Args &&... args) : detail::VectorBase<T, N>()
+    constexpr explicit Vector(Args &&... args) : detail::VectorBase<T, N>()
     {
         static_assert(sizeof...(args) == N, "Incorrect number of arguments for Vector construction.");
         T temp_data[] = {static_cast<T>(std::forward<Args>(args))...};
@@ -92,27 +92,25 @@ public:
         }
     }
 
-    Vector(const Vector &other) : detail::VectorBase<T, N>()
+    constexpr Vector(const Vector &other) : detail::VectorBase<T, N>()
     {
         this->data = other.data;
     }
 
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
-    explicit Vector(const Vector<T, M> &other) : detail::VectorBase<T, N>()
+    constexpr explicit Vector(const Vector<T, M> &other) : detail::VectorBase<T, N>()
     {
         for (size_t i = 0; i < M; ++i) {
             this->data[i] = other.data[i];
         }
     }
 
-    Vector(Vector &&other)
-
-    noexcept: detail::VectorBase<T, N>()
+    constexpr Vector(Vector &&other) noexcept: detail::VectorBase<T, N>()
     {
         this->data = std::move(other.data);
     }
 
-    explicit Vector(const T &value) : detail::VectorBase<T, N>()
+    constexpr explicit Vector(const T &value) : detail::VectorBase<T, N>()
     {
         for (size_t i = 0; i < N; ++i) {
             this->data[i] = value;
@@ -125,7 +123,7 @@ public:
      * @param other The vector to copy from.
      * @return A reference to this vector.
      */
-    Vector &operator=(const Vector &other)
+    constexpr Vector &operator=(const Vector &other)
     {
         if (this != &other) {
             this->data = other.data;
@@ -138,9 +136,7 @@ public:
      * @param other The vector to move from.
      * @return A reference to this vector.
      */
-    Vector &operator=(Vector &&other)
-
-    noexcept
+    constexpr Vector &operator=(Vector &&other) noexcept
     {
         if (this != &other) {
             this->data = std::move(other.data);
@@ -153,7 +149,7 @@ public:
      * Accessor for the vector's data.
      * @return A reference to the underlying data array.
      */
-    T &operator[](size_t index)
+    constexpr T &operator[](size_t index)
     {
         assert(index < N && "Index out of bounds.");
         return this->data[index];
@@ -162,7 +158,7 @@ public:
     /** Const accessor for the vector's data.
      * @return A const reference to the underlying data array.
      */
-    const T &operator[](size_t index) const
+    constexpr const T &operator[](size_t index) const
     {
         assert(index < N && "Index out of bounds.");
         return this->data[index];
@@ -173,7 +169,7 @@ public:
      * Unary minus operator.
      * @return A new vector with all elements negated.
      */
-    Vector<T, N> operator-() const
+    constexpr Vector<T, N> operator-() const
     {
         static_assert(std::is_signed<T>::value, "Vector's element type must be a signed type.");
         Vector<T, N> result;
@@ -188,7 +184,7 @@ public:
      * Unary plus operator.
      * @return A new vector that is a copy of this vector.
      */
-    Vector<T, N> operator+() const
+    constexpr Vector<T, N> operator+() const
     {
         return *this;
     }
@@ -201,7 +197,7 @@ public:
      * @return A new vector that is the sum of this vector and the other vector.
      */
     template<size_t M>
-    auto operator+(const Vector<T, M> &other) const
+    constexpr auto operator+(const Vector<T, M> &other) const
     {
         if constexpr (N >= M) {
             Vector<T, N> result = *this;
@@ -227,7 +223,7 @@ public:
      * @return A new vector that is the difference between this vector and the other vector.
      */
     template<size_t M>
-    auto operator-(const Vector<T, M> &other) const
+    constexpr auto operator-(const Vector<T, M> &other) const
     {
         if constexpr (N >= M) {
             Vector<T, N> result = *this;
@@ -253,7 +249,7 @@ public:
      * @return A new vector that is the element-wise product of this vector and the other vector.
      */
     template<size_t M>
-    auto operator*(const Vector<T, M> &other) const
+    constexpr auto operator*(const Vector<T, M> &other) const
     {
         if constexpr (N >= M) {
             Vector<T, N> result;
@@ -279,7 +275,7 @@ public:
      * @return A new vector that is the element-wise division of this vector by the other vector.
      */
     template<size_t M, typename = std::enable_if_t<(N <= M)>>
-    Vector<T, M> operator/(const Vector<T, M> &other) const
+    constexpr Vector<T, M> operator/(const Vector<T, M> &other) const
     {
         Vector<T, M> result;
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -297,7 +293,7 @@ public:
      * @return A reference to this vector after the addition.
      */
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
-    Vector<T, N> &operator+=(const Vector<T, M> &other)
+    constexpr Vector<T, N> &operator+=(const Vector<T, M> &other)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < M; ++i) {
@@ -313,7 +309,7 @@ public:
      * @return A reference to this vector after the subtraction.
      */
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
-    Vector<T, N> &operator-=(const Vector<T, M> &other)
+    constexpr Vector<T, N> &operator-=(const Vector<T, M> &other)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < M; ++i) {
@@ -329,7 +325,7 @@ public:
      * @return A reference to this vector after the multiplication.
      */
     template<size_t M, typename = std::enable_if_t<(N >= M)>>
-    Vector<T, N> &operator*=(const Vector<T, M> &other)
+    constexpr Vector<T, N> &operator*=(const Vector<T, M> &other)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < M; ++i) {
@@ -343,7 +339,7 @@ public:
      * @param other The vector to divide this by.
      * @return A reference to this vector after the division.
      */
-    Vector<T, N> &operator/=(const Vector<T, N> &other)
+    constexpr Vector<T, N> &operator/=(const Vector<T, N> &other)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
@@ -359,7 +355,7 @@ public:
      * @param scalar The scalar value to add.
      * @return A new vector that is the sum of this vector and the scalar.
      */
-    Vector<T, N> operator+(const T &scalar) const
+    constexpr Vector<T, N> operator+(const T &scalar) const
     {
         Vector<T, N> result = *this;
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -374,7 +370,7 @@ public:
      * @param scalar The scalar value to subtract.
      * @return A new vector that is the difference between this vector and the scalar.
      */
-    Vector<T, N> operator-(const T &scalar) const
+    constexpr Vector<T, N> operator-(const T &scalar) const
     {
         Vector<T, N> result = *this;
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -389,7 +385,7 @@ public:
      * @param scalar The scalar value to multiply with.
      * @return A new vector that is the product of this vector and the scalar.
      */
-    Vector<T, N> operator*(const T &scalar) const
+    constexpr Vector<T, N> operator*(const T &scalar) const
     {
         Vector<T, N> result = *this;
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -404,7 +400,7 @@ public:
      * @param scalar The scalar value to divide by.
      * @return A new vector that is the result of dividing this vector by the scalar.
      */
-    Vector<T, N> operator/(const T &scalar) const
+    constexpr Vector<T, N> operator/(const T &scalar) const
     {
         assert(scalar != T() && "Division by zero.");
         Vector<T, N> result = *this;
@@ -421,7 +417,7 @@ public:
      * @param scalar The scalar value to add.
      * @return A reference to this vector after the addition.
      */
-    Vector<T, N> &operator+=(const T &scalar)
+    constexpr Vector<T, N> &operator+=(const T &scalar)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
@@ -435,7 +431,7 @@ public:
      * @param scalar The scalar value to subtract.
      * @return A reference to this vector after the subtraction.
      */
-    Vector<T, N> &operator-=(const T &scalar)
+    constexpr Vector<T, N> &operator-=(const T &scalar)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
@@ -449,7 +445,7 @@ public:
      * @param scalar The scalar value to multiply.
      * @return A reference to this vector after the multiplication.
      */
-    Vector<T, N> &operator*=(const T &scalar)
+    constexpr Vector<T, N> &operator*=(const T &scalar)
     {
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
         for (size_t i = 0; i < N; ++i) {
@@ -463,7 +459,7 @@ public:
      * @param scalar The scalar value to divide by.
      * @return A reference to this vector after the division.
      */
-    Vector<T, N> &operator/=(const T &scalar)
+    constexpr Vector<T, N> &operator/=(const T &scalar)
     {
         assert(scalar != T() && "Division by zero.");
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -479,7 +475,7 @@ public:
      * @param other The other vector to compute the dot product with.
      * @return The dot product of this vector and the other vector.
      */
-    T dot(const Vector<T, N> &other) const
+    constexpr T dot(const Vector<T, N> &other) const
     {
         T result = T(); // Initialize with a zero value
         MATHUTILS_VECTOR_FOR_LOOP_UNROLL
@@ -494,7 +490,7 @@ public:
      * @param other The other 3D vector to compute the cross product with.
      * @return A new vector that is the cross product of this vector and the other vector.
      */
-    Vector<T, 3> cross(const Vector<T, 3> &other) const
+    constexpr Vector<T, 3> cross(const Vector<T, 3> &other) const
     {
         static_assert(N == 3, "Cross product is only defined for 3D vectors.");
         return Vector<T, 3>(
@@ -510,7 +506,7 @@ public:
      * @param index2 The second index of the vector to swap.
      * @return A reference to this vector after the swap.
      */
-    Vector<T, N> &swap(size_t index1, size_t index2)
+    constexpr Vector<T, N> &swap(size_t index1, size_t index2)
     {
         assert(index1 < N && index2 < N && "Index out of bounds.");
         std::swap(this->data[index1], this->data[index2]);
@@ -523,7 +519,7 @@ public:
      * @param index2 The second index of the vector to swap.
      * @return A new vector that is a copy of this vector with the specified elements swapped.
      */
-    Vector<T, N> swap(size_t index1, size_t index2) const
+    constexpr Vector<T, N> swap(size_t index1, size_t index2) const
     {
         assert(index1 < N && index2 < N && "Index out of bounds.");
         Vector<T, N> result = *this;
@@ -538,7 +534,7 @@ public:
      * @return True if the vectors are equal, false otherwise.
      */
     template<size_t M>
-    bool operator==(const Vector<T, M> &other) const
+    constexpr bool operator==(const Vector<T, M> &other) const
     {
         constexpr
         size_t smallest_size = std::min(N, M);
@@ -573,7 +569,7 @@ public:
      * @return True if the vectors are not equal, false otherwise.
      */
     template<size_t M>
-    bool operator!=(const Vector<T, M> &other) const
+    constexpr bool operator!=(const Vector<T, M> &other) const
     {
         constexpr
         size_t smallest_size = std::min(N, M);
@@ -608,7 +604,7 @@ public:
      * @return True if this vector is less than the other vector, false otherwise.
      */
     template<size_t M>
-    bool operator<(const Vector<T, M> &other) const
+    constexpr bool operator<(const Vector<T, M> &other) const
     {
 
         constexpr
@@ -651,7 +647,7 @@ public:
      * @return True if this vector is less than or equal to the other vector, false otherwise.
      */
     template<size_t M>
-    bool operator<=(const Vector<T, M> &other) const
+    constexpr bool operator<=(const Vector<T, M> &other) const
     {
 
         constexpr
@@ -694,7 +690,7 @@ public:
      * @return True if this vector is greater than the other vector, false otherwise.
      */
     template<size_t M>
-    bool operator>(const Vector<T, M> &other) const
+    constexpr bool operator>(const Vector<T, M> &other) const
     {
         constexpr
         size_t min_dim = (N < M) ? N : M;
@@ -737,7 +733,7 @@ public:
      * @return True if this vector is greater than or equal to the other vector, false otherwise.
      */
     template<size_t M>
-    bool operator>=(const Vector<T, M> &other) const
+    constexpr bool operator>=(const Vector<T, M> &other) const
     {
         constexpr
         size_t min_dim = (N < M) ? N : M;

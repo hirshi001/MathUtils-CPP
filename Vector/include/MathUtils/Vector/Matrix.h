@@ -20,7 +20,7 @@ private:
 
 public:
     // Default constructor initializes all elements to zero.
-    Matrix()
+    consteval Matrix()
     {
         for (size_t i = 0; i < N; ++i) {
             data[i] = Vector<T, M>();
@@ -28,40 +28,40 @@ public:
     }
 
     // Access operator
-    T &operator()(size_t row, size_t col)
+    constexpr T &operator()(size_t row, size_t col)
     {
         assert(row < N && col < M && "Matrix index out of bounds.");
         return data[row][col];
     }
 
-    const T &operator()(size_t row, size_t col) const
+    constexpr const T &operator()(size_t row, size_t col) const
     {
         assert(row < N && col < M && "Matrix index out of bounds.");
         return data[row][col];
     }
 
-    const Vector<T, M>& operator[](size_t row) const
+    constexpr const Vector<T, M>& operator[](size_t row) const
     {
         assert(row < N && "Matrix row index out of bounds.");
         return data[row];
     }
 
-    Vector<T, M>& operator[](size_t row)
+    constexpr Vector<T, M>& operator[](size_t row)
     {
         assert(row < N && "Matrix row index out of bounds.");
         return data[row];
     }
 
     // Get number of rows
-    [[nodiscard]] size_t rows() const
+    [[nodiscard]] constexpr size_t rows() const
     { return N; }
 
     // Get number of columns
-    [[nodiscard]] size_t cols() const
+    [[nodiscard]] constexpr size_t cols() const
     { return M; }
 
     // Matrix addition
-    Matrix<T, N, M> operator+(const Matrix<T, N, M> &other) const
+    constexpr Matrix<T, N, M> operator+(const Matrix<T, N, M> &other) const
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
@@ -71,7 +71,7 @@ public:
     }
 
     // Matrix subtraction
-    Matrix<T, N, M> operator-(const Matrix<T, N, M> &other) const
+    constexpr Matrix<T, N, M> operator-(const Matrix<T, N, M> &other) const
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
@@ -80,7 +80,7 @@ public:
     }
 
     // Matrix element multiplication
-    Matrix<T, N, M> operator*(const Matrix<T, N, M> &other) const
+    constexpr Matrix<T, N, M> operator*(const Matrix<T, N, M> &other) const
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
@@ -90,7 +90,7 @@ public:
 
     // Matrix multiplication
     template<size_t P>
-    Matrix<T, N, P> operator$(const Matrix<T, M, P> &other) const
+    constexpr Matrix<T, N, P> operator$(const Matrix<T, M, P> &other) const
     {
         static_assert(M == P,
                       "Matrix multiplication requires the number of columns in the first matrix to match the number of rows in the second matrix.");
@@ -106,7 +106,7 @@ public:
         return result;
     }
 
-    Matrix<T, N, 1> operator$(const MathUtils::Vector<T, M> &other) const
+    constexpr Matrix<T, N, 1> operator$(const MathUtils::Vector<T, M> &other) const
     {
         static_assert(M == other.size(),
                       "Matrix multiplication requires the number of columns in the matrix to match the size of the vector.");
@@ -121,7 +121,7 @@ public:
     }
 
     // Scalar addition
-    Matrix<T, N, M> operator+(const T &scalar) const
+    constexpr Matrix<T, N, M> operator+(const T &scalar) const
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
@@ -133,7 +133,7 @@ public:
     }
 
     // Scalar subtraction
-    Matrix<T, N, M> operator-(const T &scalar) const
+    constexpr Matrix<T, N, M> operator-(const T &scalar) const
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
@@ -145,7 +145,7 @@ public:
     }
 
     // Scalar multiplication
-    Matrix<T, N, M> operator*(const T &scalar) const
+    constexpr Matrix<T, N, M> operator*(const T &scalar) const
     {
         Matrix<T, N, M> result;
         for (size_t i = 0; i < N; ++i) {
@@ -157,7 +157,7 @@ public:
     }
 
     // Scalar division
-    Matrix<T, N, M> operator/(const T &scalar) const
+    constexpr Matrix<T, N, M> operator/(const T &scalar) const
     {
         assert(scalar != T() && "Division by zero in Matrix.");
         Matrix<T, N, M> result;
@@ -170,7 +170,7 @@ public:
     }
 
     // Scalar addition assignment
-    Matrix<T, N, M> &operator+=(const T &scalar)
+    constexpr Matrix<T, N, M> &operator+=(const T &scalar)
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
@@ -181,7 +181,7 @@ public:
     }
 
     // Scalar subtraction assignment
-    Matrix<T, N, M> &operator-=(const T &scalar)
+    constexpr Matrix<T, N, M> &operator-=(const T &scalar)
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
@@ -192,7 +192,7 @@ public:
     }
 
     // Scalar multiplication assignment
-    Matrix<T, N, M> &operator*=(const T &scalar)
+    constexpr Matrix<T, N, M> &operator*=(const T &scalar)
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
@@ -203,7 +203,7 @@ public:
     }
 
     // Scalar division assignment
-    Matrix<T, N, M> &operator/=(const T &scalar)
+    constexpr Matrix<T, N, M> &operator/=(const T &scalar)
     {
         assert(scalar != T() && "Division by zero in Matrix.");
         for (size_t i = 0; i < N; ++i) {
@@ -215,7 +215,7 @@ public:
     }
 
     // Equality operator
-    bool operator==(const Matrix<T, N, M> &other) const
+    constexpr bool operator==(const Matrix<T, N, M> &other) const
     {
         for (size_t i = 0; i < N; ++i) {
             for (size_t j = 0; j < M; ++j) {
