@@ -371,7 +371,8 @@ Time<AsUnit, T> now()
     static_assert(std::is_arithmetic<T>::value, "Time template parameter T must be a numerical type.");
 
     // Get the current time point with the highest possible resolution.
-    auto currentTimePoint = std::chrono::high_resolution_clock::now();
+    auto currentTimePoint = std::chrono::steady_clock::now();
+    std::chrono::system_clock::now();
 
     // Use duration_cast to convert the time point's duration to the target unit.
     // We use our helper function to get the correct std::chrono::duration type.
